@@ -1,0 +1,22 @@
+{
+    "siteUrl": "https://yourtenant.sharepoint.com/",
+    "tenantId": "yourtenant.onmicrosoft.com",
+    "queryText": "contentclass:STS_ListItem",
+    "selectProperties": [
+        "Title",
+        "Path",
+        "LastModifiedTime",
+        "SiteId",
+        "WebId",
+        "ListId",
+        "UniqueId",
+        "WorkId"
+    ],
+    "rowLimit": 10,
+    "sortList": "",
+    "pageUrl": "",
+    "intervalValue": 10,
+    "intervalUnit": "seconds",
+    "clientId": "9bc3ab49-b65d-410a-85ad-de819febfddc",
+    "workspaceUrl": ""
+}
