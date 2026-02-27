@@ -63,7 +63,9 @@ Accepts prefix styles: `-admin`, `--admin`, `/admin`
 
 ## Configuration
 
-The `search-config.json` file controls all probe behavior:
+The `search-config.json` file controls all probe behavior. In **Admin mode**, all settings can be
+configured directly in the GUI and are saved automatically — no manual file editing required.
+The JSON reference below is for informational purposes or manual editing if preferred:
 
 ```json
 {

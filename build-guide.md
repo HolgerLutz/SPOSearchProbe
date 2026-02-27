@@ -143,7 +143,11 @@ Repeat with `-r win-arm64` for ARM64 builds.
 
 ## Configure Before Distribution
 
-Edit `search-config.json` before sending to end users:
+> **Tip:** You don't need to edit `search-config.json` manually. Launch the tool in **Admin mode**
+> (`.\SPOSearchProbe.exe -admin`), configure all settings in the GUI, and the config file is saved
+> automatically. You can then use **📦 Create EndUser Package** to generate a ready-to-distribute ZIP.
+
+If you prefer to edit the config file manually:
 
 ```json
 {
