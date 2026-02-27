@@ -20,7 +20,9 @@ administrator edits before distribution.
 | **Windows** | 10 (1809+) or 11 | WinForms GUI + DPAPI token encryption |
 | **.NET 10 SDK** | 10.0.x (Preview) | Build and publish the application |
 | **PowerShell** | 5.1+ or 7.x | Run the `Build.ps1` build script |
-| **Internet access** | During build only | NuGet package restore (not needed at runtime) |
+
+> **Note:** The `Build.ps1` script automatically checks for prerequisites and offers to install
+> the .NET 10 SDK if missing (via winget or the official `dotnet-install.ps1` script).
 
 > **Note:** The end user running the compiled `.exe` does **not** need the .NET SDK or runtime
 > installed — the published binary is fully self-contained.
@@ -29,20 +31,18 @@ administrator edits before distribution.
 
 ## Step 1 — Install .NET 10 SDK
 
-### Option A: Manual Download
+> **Recommended:** Just run `.\Build.ps1` — it checks for prerequisites and offers to install the
+> .NET 10 SDK automatically. The manual options below are only needed if you prefer to install
+> the SDK yourself.
 
-1. Go to [https://dotnet.microsoft.com/download/dotnet/10.0](https://dotnet.microsoft.com/download/dotnet/10.0)
-2. Under **SDK**, download the installer for your architecture:
-   - **x64** → `dotnet-sdk-10.0.xxx-win-x64.exe`
-   - **ARM64** → `dotnet-sdk-10.0.xxx-win-arm64.exe`
-3. Run the installer and follow the prompts
-4. Verify:
-   ```powershell
-   dotnet --version
-   # Expected: 10.0.xxx
-   ```
+### Option A: winget (Windows Package Manager)
 
-### Option B: PowerShell (Automated)
+```powershell
+winget install Microsoft.DotNet.SDK.Preview
+dotnet --version
+```
+
+### Option B: PowerShell (Automated — works on servers without winget)
 
 ```powershell
 # Download and run the official dotnet-install script
@@ -55,12 +55,18 @@ Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile "$env:TE
 dotnet --version
 ```
 
-### Option C: winget (Windows Package Manager)
+### Option C: Manual Download
 
-```powershell
-winget install Microsoft.DotNet.SDK.Preview
-dotnet --version
-```
+1. Go to [https://dotnet.microsoft.com/download/dotnet/10.0](https://dotnet.microsoft.com/download/dotnet/10.0)
+2. Under **SDK**, download the installer for your architecture:
+   - **x64** → `dotnet-sdk-10.0.xxx-win-x64.exe`
+   - **ARM64** → `dotnet-sdk-10.0.xxx-win-arm64.exe`
+3. Run the installer and follow the prompts
+4. Verify:
+   ```powershell
+   dotnet --version
+   # Expected: 10.0.xxx
+   ```
 
 ---
 
@@ -95,27 +101,20 @@ SPOSearchProbe\
 
 ## Step 3 — Build the Application
 
-### Option A: Quick Build (Debug)
+### Option A: Build Script *(Recommended)*
+
+The `Build.ps1` script checks all prerequisites (offers to install .NET 10 SDK if missing),
+then builds self-contained single-file EXEs for both win-x64 and win-arm64:
 
 ```powershell
-cd SPOSearchProbe
-dotnet build
-```
-
-This compiles to `bin\Debug\net10.0-windows\` — useful for development and testing.
-Requires .NET 10 runtime on the machine to run.
-
-### Option B: Publish Self-Contained Single-File EXE
-
-The `Build.ps1` script checks all prerequisites first (offers to install .NET 10 SDK via winget
-if missing), then builds both platforms:
-
-```powershell
-# Build both win-x64 and win-arm64 with versioned ZIPs
+# PowerShell — build both platforms with versioned ZIPs
 .\Build.ps1
 
-# Or from a command prompt:
+# Command Prompt alternative
 .\Build.bat
+
+# Skip prerequisite checks if SDK is already installed
+.\Build.ps1 -SkipPrereqs
 ```
 
 This produces distribution ZIPs in `dist\`:
@@ -132,15 +131,15 @@ Each ZIP contains:
 └── search-config.json          # Configuration template
 ```
 
-### Option C: Quick Dev Build (x64 only) *(script not included in repo)*
-
-Create your own `Build-Dev.ps1` locally for fast iteration:
+### Option B: Manual Debug Build
 
 ```powershell
-.\Build-Dev.ps1              # Build and launch in admin mode
-.\Build-Dev.ps1 -EndUser     # Build and launch in end-user mode
-.\Build-Dev.ps1 -NoLaunch    # Build only, don't launch
+cd SPOSearchProbe
+dotnet build
 ```
+
+This compiles to `bin\Debug\net10.0-windows\` — useful for development and testing.
+Requires .NET 10 runtime on the machine to run.
 
 ### What the Publish Does
 
@@ -219,45 +218,6 @@ To launch Admin mode, either:
 
 > **Tip:** In Admin mode, the config file is auto-created if missing. In End-User mode,
 > a pre-configured `search-config.json` must exist next to the `.exe`.
-
----
-
-## Troubleshooting
-
-### Build error: `NU1100: Unable to resolve ... PackageSourceMapping`
-
-Your global `NuGet.Config` has restrictive package source mappings. Create a local
-`NuGet.Config` in the repo root with a wildcard pattern, or clear the cache:
-
-```powershell
-# Temporarily clear NuGet cache and restore
-dotnet nuget locals all --clear
-cd SPOSearchProbe
-dotnet restore
-dotnet build
-```
-
-### `dotnet` command not found after installation
-
-The installer may not have updated the `PATH`. Either:
-- Restart your terminal / PowerShell session
-- Or add manually:
-  ```powershell
-  $env:PATH += ";$env:ProgramFiles\dotnet"
-  ```
-
-### Build succeeds but EXE won't start on target machine
-
-Ensure you published with the correct runtime identifier:
-- `win-x64` for Intel/AMD 64-bit
-- `win-arm64` for ARM-based Windows devices
-- The self-contained flag must be `true`
-
-### Token / authentication errors at runtime
-
-- The `clientId` must be an app registration that allows public client (PKCE) flows
-- The default PnP Management Shell client ID works for most M365 tenants
-- The user must have at least read permissions on the target SharePoint site
 
 ---
 

@@ -128,19 +128,9 @@ In Admin mode, click **📦 Create EndUser Package** to:
 
 > **Note:** End users do **not** need the .NET SDK — the published binary is fully self-contained.
 
-### `Build-Dev.ps1` — Quick Development Build *(not included in repo)*
-
-Builds win-x64 only for fast iteration. Backs up and restores config/tokens across builds.
-
-```powershell
-.\Build-Dev.ps1              # Build and launch in admin mode
-.\Build-Dev.ps1 -EndUser     # Build and launch in end-user mode
-.\Build-Dev.ps1 -NoLaunch    # Build only, don't launch
-```
-
 ### `Build.ps1` / `Build.bat` — Release Build
 
-Checks prerequisites (offers to install .NET 10 SDK via winget if missing), then builds both win-x64 and win-arm64 with versioned distribution ZIPs in `dist/`.
+Checks prerequisites (offers to install .NET 10 SDK via winget or automated download), then builds both win-x64 and win-arm64 with versioned distribution ZIPs in `dist/`.
 
 ```powershell
 .\Build.ps1                  # Full build with prerequisite checks
@@ -155,21 +145,6 @@ dist/
 ├── SPOSearchProbe-v1.26.226.1-win-x64.zip
 └── SPOSearchProbe-v1.26.226.1-win-arm64.zip
 ```
-
-### `PublishToGitHub.ps1` — Commit & Push *(not included in repo)*
-
-Commits changes to GitHub and optionally runs a dev build.
-
-```powershell
-.\PublishToGitHub.ps1                            # Auto-message, commit + push + build
-.\PublishToGitHub.ps1 -Message "Fix OAuth bug"   # Custom commit message
-.\PublishToGitHub.ps1 -SkipBuild                 # Commit only
-.\PublishToGitHub.ps1 -BuildOnly                 # Build only
-```
-
-Requires environment variables:
-- `SPOSEARCHPROBE_GITHUB_PAT` — GitHub Personal Access Token
-- `SPOSEARCHPROBE_GITHUB_REPO` — Repository (e.g. `HolgerLutz/SPOSearchProbe`)
 
 ### Versioning
 
