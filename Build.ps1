@@ -62,7 +62,7 @@ function Check-Prerequisites {
             $hasWinget = $null -ne (Get-Command winget -ErrorAction SilentlyContinue)
             if ($hasWinget) {
                 Write-Host "  Installing .NET 10 SDK via winget..." -ForegroundColor Cyan
-                winget install Microsoft.DotNet.SDK.Preview --accept-package-agreements --accept-source-agreements
+                winget install Microsoft.DotNet.SDK.10 --accept-package-agreements --accept-source-agreements
                 if ($LASTEXITCODE -eq 0) {
                     Write-Host "  [OK] .NET 10 SDK installed via winget." -ForegroundColor Green
                     $env:PATH = [System.Environment]::GetEnvironmentVariable("PATH", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("PATH", "User")
