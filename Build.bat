@@ -45,23 +45,63 @@ if !DOTNET_OK!==0 (
     echo   [MISSING] .NET 10 SDK is required to build this project.
     echo.
     echo   Install options:
-    echo     1^) winget install Microsoft.DotNet.SDK.Preview
-    echo     2^) Download from https://dotnet.microsoft.com/download/dotnet/10.0
+    echo     1^) winget ^(if available^)
+    echo     2^) Automatic download via dotnet-install.ps1 ^(works on servers^)
+    echo     3^) Manual download from https://dotnet.microsoft.com/download/dotnet/10.0
     echo.
-    set /p "INSTALL_CHOICE=  Install .NET 10 SDK via winget now? (Y/N): "
+    set /p "INSTALL_CHOICE=  Install .NET 10 SDK now? (Y/N): "
     if /I "!INSTALL_CHOICE!"=="Y" (
-        echo   Installing .NET 10 SDK via winget...
-        winget install Microsoft.DotNet.SDK.Preview --accept-package-agreements --accept-source-agreements
+        :: Try winget first
+        where winget >nul 2>&1
         if !ERRORLEVEL!==0 (
-            echo   [OK] .NET 10 SDK installed. You may need to restart your terminal.
-            echo   Refreshing PATH...
-            :: Refresh PATH from registry
-            for /f "tokens=2*" %%A in ('reg query "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v Path 2^>nul') do set "SYSPATH=%%B"
-            for /f "tokens=2*" %%A in ('reg query "HKCU\Environment" /v Path 2^>nul') do set "USRPATH=%%B"
-            set "PATH=!SYSPATH!;!USRPATH!"
-            set "DOTNET_OK=1"
+            echo   Installing .NET 10 SDK via winget...
+            winget install Microsoft.DotNet.SDK.Preview --accept-package-agreements --accept-source-agreements
+            if !ERRORLEVEL!==0 (
+                echo   [OK] .NET 10 SDK installed via winget.
+                echo   Refreshing PATH...
+                for /f "tokens=2*" %%A in ('reg query "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v Path 2^>nul') do set "SYSPATH=%%B"
+                for /f "tokens=2*" %%A in ('reg query "HKCU\Environment" /v Path 2^>nul') do set "USRPATH=%%B"
+                set "PATH=!SYSPATH!;!USRPATH!"
+                set "DOTNET_OK=1"
+            ) else (
+                echo   [WARN] winget install failed, trying dotnet-install.ps1...
+            )
         ) else (
-            echo   [FAIL] winget install failed. Please install manually.
+            echo   winget not available, using dotnet-install.ps1...
+        )
+
+        if !DOTNET_OK!==0 (
+            echo   Downloading official dotnet-install.ps1 ...
+            powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+                "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri 'https://dot.net/v1/dotnet-install.ps1' -OutFile '%TEMP%\dotnet-install.ps1' -UseBasicParsing"
+            if exist "%TEMP%\dotnet-install.ps1" (
+                echo   Running dotnet-install.ps1 -Channel 10.0 ...
+                powershell -NoProfile -ExecutionPolicy Bypass -File "%TEMP%\dotnet-install.ps1" -Channel 10.0 -InstallDir "%ProgramFiles%\dotnet"
+                :: Refresh PATH from registry + ensure dotnet dir is included
+                for /f "tokens=2*" %%A in ('reg query "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v Path 2^>nul') do set "SYSPATH=%%B"
+                for /f "tokens=2*" %%A in ('reg query "HKCU\Environment" /v Path 2^>nul') do set "USRPATH=%%B"
+                set "PATH=!SYSPATH!;!USRPATH!"
+                echo !PATH! | findstr /I /C:"\dotnet" >nul 2>&1
+                if !ERRORLEVEL! neq 0 set "PATH=%ProgramFiles%\dotnet;!PATH!"
+                :: Verify
+                dotnet --version >nul 2>&1
+                if !ERRORLEVEL!==0 (
+                    for /f "tokens=*" %%V in ('dotnet --version 2^>nul') do set "DOTNET_VER=%%V"
+                    echo !DOTNET_VER! | findstr /B "10." >nul 2>&1
+                    if !ERRORLEVEL!==0 (
+                        echo   [OK] .NET SDK !DOTNET_VER! installed via dotnet-install.ps1
+                        set "DOTNET_OK=1"
+                    ) else (
+                        echo   [WARN] dotnet-install.ps1 completed but .NET 10 not detected ^(got: !DOTNET_VER!^).
+                    )
+                ) else (
+                    echo   [WARN] dotnet command not found after install. Restart your terminal.
+                )
+            ) else (
+                echo   [FAIL] Download of dotnet-install.ps1 failed.
+                echo          Please install .NET 10 SDK manually:
+                echo          https://dotnet.microsoft.com/download/dotnet/10.0
+            )
         )
     ) else (
         echo   Skipping .NET SDK install.
