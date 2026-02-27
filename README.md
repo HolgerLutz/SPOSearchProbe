@@ -118,42 +118,26 @@ In Admin mode, click **📦 Create EndUser Package** to:
 
 ---
 
-## Build Scripts
+## Building from Source
 
-### Prerequisites
+For detailed build instructions (including manual build steps), see the **[Build & Deployment Guide](build-guide.md)**.
 
-| Requirement | Version | Purpose |
-|---|---|---|
-| **Windows** | 10 (1809+) or 11 | WinForms GUI + DPAPI token encryption |
-| **.NET 10 SDK** | 10.0.x (Preview) | Build the application |
-| **PowerShell** | 5.1+ | Run the build scripts |
+### Quick Build
 
-> **Note:** End users do **not** need the .NET SDK — the published binary is fully self-contained.
-
-### `Build.ps1` — Release Build
-
-Checks prerequisites (offers to install .NET 10 SDK via winget or automated download), then builds both win-x64 and win-arm64 with versioned distribution ZIPs in `dist/`.
+The `Build.ps1` script checks prerequisites (offers to install .NET 10 SDK via winget or automated download), then builds both win-x64 and win-arm64 with versioned distribution ZIPs in `dist/`.
 
 ```powershell
 .\Build.ps1                  # Full build with prerequisite checks
 .\Build.ps1 -SkipPrereqs    # Skip prerequisite checks
 ```
 
-Output:
+| Requirement | Version |
+|---|---|
+| **Windows** | 10 (1809+) or 11 |
+| **.NET 10 SDK** | 10.0.x (Preview) — installed automatically by `Build.ps1` if missing |
+| **PowerShell** | 5.1+ |
 
-```
-dist/
-├── SPOSearchProbe-v1.26.226.1-win-x64.zip
-└── SPOSearchProbe-v1.26.226.1-win-arm64.zip
-```
-
-### Versioning
-
-All build scripts use the format `v1.YY.MDD.Build` where:
-- `YY` = two-digit year
-- `M` = month (no leading zero)
-- `DD` = day (with leading zero)
-- `Build` = daily build counter (auto-incremented, stored in `.build-counter`)
+> **Note:** End users do **not** need the .NET SDK — the published binary is fully self-contained.
 
 ---
 
