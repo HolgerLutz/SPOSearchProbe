@@ -11,66 +11,83 @@ The application publishes as a **single self-contained `.exe`** — no .NET runt
 required on the target machine. The only companion file is `search-config.json` which the
 administrator edits before distribution.
 
----
-
-## Prerequisites
-
-| Requirement | Version | Purpose |
-|---|---|---|
-| **Windows** | 10 (1809+) or 11 | WinForms GUI + DPAPI token encryption |
-| **.NET 10 SDK** | 10.0.x (Preview) | Build and publish the application |
-| **PowerShell** | 5.1+ or 7.x | Run the `Build.ps1` build script |
-
-> **Note:** The `Build.ps1` script automatically checks for prerequisites and offers to install
-> the .NET 10 SDK if missing (via winget or the official `dotnet-install.ps1` script).
-
 > **Note:** The end user running the compiled `.exe` does **not** need the .NET SDK or runtime
 > installed — the published binary is fully self-contained.
 
 ---
 
-## Step 1 — Install .NET 10 SDK
+## Option 1: Build Script *(Recommended)*
 
-> **Recommended:** Just run `.\Build.ps1` — it checks for prerequisites and offers to install the
-> .NET 10 SDK automatically. The manual options below are only needed if you prefer to install
-> the SDK yourself.
+The included `Build.ps1` (PowerShell) and `Build.bat` (Command Prompt) scripts handle everything
+automatically — they check for prerequisites, offer to install the .NET 10 SDK if missing
+(via winget or the official `dotnet-install.ps1` script), and then build self-contained
+single-file EXEs for both win-x64 and win-arm64.
 
-### Option A: winget (Windows Package Manager)
+```powershell
+# PowerShell
+.\Build.ps1
+
+# Command Prompt
+.\Build.bat
+
+# Skip prerequisite checks if SDK is already installed
+.\Build.ps1 -SkipPrereqs
+```
+
+Output:
+
+```
+dist\
+├── SPOSearchProbe-v1.26.226.1-win-x64.zip      # Intel/AMD 64-bit
+└── SPOSearchProbe-v1.26.226.1-win-arm64.zip     # ARM64
+```
+
+Each ZIP contains:
+```
+├── SPOSearchProbe.exe          # ~48 MB, fully self-contained
+└── search-config.json          # Configuration template
+```
+
+That's it — proceed to [Configure Before Distribution](#configure-before-distribution) below.
+
+---
+
+## Option 2: Manual Build
+
+If you prefer to install prerequisites and build manually, follow these steps.
+
+### Step 1 — Install .NET 10 SDK
+
+| Requirement | Version | Purpose |
+|---|---|---|
+| **Windows** | 10 (1809+) or 11 | WinForms GUI + DPAPI token encryption |
+| **.NET 10 SDK** | 10.0.x (Preview) | Build and publish the application |
+| **PowerShell** | 5.1+ or 7.x | ZIP packaging in the build script |
+
+Install the .NET 10 SDK using one of these methods:
+
+**winget (Windows Package Manager):**
 
 ```powershell
 winget install Microsoft.DotNet.SDK.Preview
 dotnet --version
 ```
 
-### Option B: PowerShell (Automated — works on servers without winget)
+**PowerShell (works on servers without winget):**
 
 ```powershell
-# Download and run the official dotnet-install script
 Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile "$env:TEMP\dotnet-install.ps1"
-
-# Install .NET 10 SDK (latest preview)
 & "$env:TEMP\dotnet-install.ps1" -Channel 10.0 -InstallDir "$env:ProgramFiles\dotnet"
-
-# Verify installation
 dotnet --version
 ```
 
-### Option C: Manual Download
+**Manual download:**
 
 1. Go to [https://dotnet.microsoft.com/download/dotnet/10.0](https://dotnet.microsoft.com/download/dotnet/10.0)
-2. Under **SDK**, download the installer for your architecture:
-   - **x64** → `dotnet-sdk-10.0.xxx-win-x64.exe`
-   - **ARM64** → `dotnet-sdk-10.0.xxx-win-arm64.exe`
-3. Run the installer and follow the prompts
-4. Verify:
-   ```powershell
-   dotnet --version
-   # Expected: 10.0.xxx
-   ```
+2. Download the SDK installer for your architecture (x64 or ARM64)
+3. Run the installer, then verify: `dotnet --version`
 
----
-
-## Step 2 — Verify the Solution Structure
+### Step 2 — Verify the Solution Structure
 
 After extracting or cloning the source, you should have:
 
@@ -97,53 +114,18 @@ SPOSearchProbe\
     └── search-config.json          # Template configuration file
 ```
 
----
+### Step 3 — Build
 
-## Step 3 — Build the Application
-
-### Option A: Build Script *(Recommended)*
-
-The `Build.ps1` script checks all prerequisites (offers to install .NET 10 SDK if missing),
-then builds self-contained single-file EXEs for both win-x64 and win-arm64:
-
-```powershell
-# PowerShell — build both platforms with versioned ZIPs
-.\Build.ps1
-
-# Command Prompt alternative
-.\Build.bat
-
-# Skip prerequisite checks if SDK is already installed
-.\Build.ps1 -SkipPrereqs
-```
-
-This produces distribution ZIPs in `dist\`:
-
-```
-dist\
-├── SPOSearchProbe-v1.26.226.1-win-x64.zip
-└── SPOSearchProbe-v1.26.226.1-win-arm64.zip
-```
-
-Each ZIP contains:
-```
-├── SPOSearchProbe.exe          # ~48 MB, fully self-contained
-└── search-config.json          # Configuration template
-```
-
-### Option B: Manual Debug Build
+**Debug build** (requires .NET 10 runtime on the machine to run):
 
 ```powershell
 cd SPOSearchProbe
 dotnet build
 ```
 
-This compiles to `bin\Debug\net10.0-windows\` — useful for development and testing.
-Requires .NET 10 runtime on the machine to run.
+Output: `bin\Debug\net10.0-windows\`
 
-### What the Publish Does
-
-The script runs the following `dotnet publish` command under the hood:
+**Release build** (self-contained single-file EXE):
 
 ```powershell
 dotnet publish SPOSearchProbe -c Release -r win-x64 --self-contained true `
@@ -152,6 +134,8 @@ dotnet publish SPOSearchProbe -c Release -r win-x64 --self-contained true `
     -p:EnableCompressionInSingleFile=true `
     -p:DebugType=none
 ```
+
+Repeat with `-r win-arm64` for ARM64 builds.
 
 | Flag | Purpose |
 |---|---|
@@ -163,7 +147,7 @@ dotnet publish SPOSearchProbe -c Release -r win-x64 --self-contained true `
 
 ---
 
-## Step 4 — Configure Before Distribution
+## Configure Before Distribution
 
 Edit `search-config.json` before sending to end users:
 
@@ -198,7 +182,7 @@ Edit `search-config.json` before sending to end users:
 
 ---
 
-## Step 5 — Run the Application
+## Run the Application
 
 1. Extract `SPOSearchProbe-win-x64.zip` to a folder
 2. Edit `search-config.json` with your tenant and search parameters
