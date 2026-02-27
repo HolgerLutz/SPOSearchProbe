@@ -27,6 +27,9 @@ script), and then builds self-contained single-file EXEs for both win-x64 and wi
 
 # Skip prerequisite checks if SDK is already installed
 .\Build.ps1 -SkipPrereqs
+
+# Build and launch the app in admin mode afterwards
+.\Build.ps1 -Launch
 ```
 
 Output:
@@ -43,7 +46,7 @@ Each ZIP contains:
 └── search-config.json          # Configuration template
 ```
 
-That's it — proceed to [Configure Before Distribution](#configure-before-distribution) below.
+That's it — see the **[README](README.md)** for configuration and usage instructions.
 
 ---
 

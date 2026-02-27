@@ -129,6 +129,7 @@ The `Build.ps1` script checks prerequisites (offers to install .NET 10 SDK via w
 ```powershell
 .\Build.ps1                  # Full build with prerequisite checks
 .\Build.ps1 -SkipPrereqs    # Skip prerequisite checks
+.\Build.ps1 -Launch          # Build and launch the app in admin mode
 ```
 
 | Requirement | Version |
