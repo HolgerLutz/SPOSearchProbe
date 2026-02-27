@@ -258,10 +258,11 @@ foreach ($runtime in $runtimes) {
 }
 Write-Host "Contents: SPOSearchProbe.exe + search-config.json" -ForegroundColor White
 
-# --- Launch arm64 build in admin mode ---
-$arm64Exe = Join-Path (Join-Path (Join-Path (Join-Path $projectDir "bin") "publish") "win-arm64") "SPOSearchProbe.exe"
-if (Test-Path $arm64Exe) {
+# --- Launch the matching build in admin mode ---
+$arch = if ($env:PROCESSOR_ARCHITECTURE -eq "ARM64") { "win-arm64" } else { "win-x64" }
+$launchExe = Join-Path (Join-Path (Join-Path (Join-Path $projectDir "bin") "publish") $arch) "SPOSearchProbe.exe"
+if (Test-Path $launchExe) {
     Write-Host ""
-    Write-Host "Launching SPOSearchProbe (arm64) in admin mode..." -ForegroundColor Magenta
-    Start-Process $arm64Exe -ArgumentList "-admin"
+    Write-Host "Launching SPOSearchProbe ($arch) in admin mode..." -ForegroundColor Magenta
+    Start-Process $launchExe -ArgumentList "-admin"
 }
