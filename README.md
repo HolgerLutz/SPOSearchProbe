@@ -128,14 +128,13 @@ In Admin mode, click **📦 Create EndUser Package** to:
 
 > **Note:** End users do **not** need the .NET SDK — the published binary is fully self-contained.
 
-### `Build.ps1` / `Build.bat` — Release Build
+### `Build.ps1` — Release Build
 
 Checks prerequisites (offers to install .NET 10 SDK via winget or automated download), then builds both win-x64 and win-arm64 with versioned distribution ZIPs in `dist/`.
 
 ```powershell
 .\Build.ps1                  # Full build with prerequisite checks
 .\Build.ps1 -SkipPrereqs    # Skip prerequisite checks
-.\Build.bat                  # Same, from a regular command prompt
 ```
 
 Output:
@@ -173,10 +172,9 @@ SPOSearchProbe/
 │   ├── LiveChartForm.cs            # Real-time execution timeline chart
 │   └── search-config.json          # Configuration template
 ├── Build.ps1                       # Release build with prerequisite checks
-├── Build.bat                       # Same as Build.ps1, for command prompt
 ├── LICENSE                         # MIT License
 ├── README.md                       # This file
-├── BUILD-GUIDE.md                  # Detailed build & deployment guide
+├── build-guide.md                  # Detailed build & deployment guide
 └── .github/
     └── copilot-instructions.md     # GitHub Copilot coding conventions
 ```

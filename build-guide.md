@@ -18,17 +18,12 @@ administrator edits before distribution.
 
 ## Option 1: Build Script *(Recommended)*
 
-The included `Build.ps1` (PowerShell) and `Build.bat` (Command Prompt) scripts handle everything
-automatically — they check for prerequisites, offer to install the .NET 10 SDK if missing
-(via winget or the official `dotnet-install.ps1` script), and then build self-contained
-single-file EXEs for both win-x64 and win-arm64.
+The included `Build.ps1` script handles everything automatically — it checks for prerequisites,
+offers to install the .NET 10 SDK if missing (via winget or the official `dotnet-install.ps1`
+script), and then builds self-contained single-file EXEs for both win-x64 and win-arm64.
 
 ```powershell
-# PowerShell
 .\Build.ps1
-
-# Command Prompt
-.\Build.bat
 
 # Skip prerequisite checks if SDK is already installed
 .\Build.ps1 -SkipPrereqs
@@ -93,11 +88,10 @@ After extracting or cloning the source, you should have:
 
 ```
 SPOSearchProbe\
-├── Build.ps1                       # Build script with prerequisite checks (PowerShell)
-├── Build.bat                       # Build script with prerequisite checks (Command Prompt)
+├── Build.ps1                       # Build script with prerequisite checks
 ├── LICENSE                         # MIT License
 ├── README.md                       # Project overview and usage guide
-├── BUILD-GUIDE.md                  # This file
+├── build-guide.md                  # This file
 ├── .github\
 │   └── copilot-instructions.md     # Copilot coding conventions
 └── SPOSearchProbe\
