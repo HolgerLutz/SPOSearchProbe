@@ -3,13 +3,15 @@
 # Usage:
 #   .\Build.ps1              # Full build (x64 + arm64) with distribution ZIPs
 #   .\Build.ps1 -SkipPrereqs # Skip prerequisite checks
+#   .\Build.ps1 -Launch      # Build and launch the app in admin mode afterwards
 #
 # Prerequisites checked:
 #   - .NET 10 SDK (offers install via winget or dotnet-install.ps1 download)
 #   - PowerShell 5.1+ (informational only — you're already running it)
 
 param(
-    [switch]$SkipPrereqs
+    [switch]$SkipPrereqs,
+    [switch]$Launch
 )
 
 $ErrorActionPreference = "Stop"
@@ -258,11 +260,13 @@ foreach ($runtime in $runtimes) {
 }
 Write-Host "Contents: SPOSearchProbe.exe + search-config.json" -ForegroundColor White
 
-# --- Launch the matching build in admin mode ---
-$arch = if ($env:PROCESSOR_ARCHITECTURE -eq "ARM64") { "win-arm64" } else { "win-x64" }
-$launchExe = Join-Path (Join-Path (Join-Path (Join-Path $projectDir "bin") "publish") $arch) "SPOSearchProbe.exe"
-if (Test-Path $launchExe) {
-    Write-Host ""
-    Write-Host "Launching SPOSearchProbe ($arch) in admin mode..." -ForegroundColor Magenta
-    Start-Process $launchExe -ArgumentList "-admin"
+# --- Launch the matching build in admin mode (only with -Launch) ---
+if ($Launch) {
+    $arch = if ($env:PROCESSOR_ARCHITECTURE -eq "ARM64") { "win-arm64" } else { "win-x64" }
+    $launchExe = Join-Path (Join-Path (Join-Path (Join-Path $projectDir "bin") "publish") $arch) "SPOSearchProbe.exe"
+    if (Test-Path $launchExe) {
+        Write-Host ""
+        Write-Host "Launching SPOSearchProbe ($arch) in admin mode..." -ForegroundColor Magenta
+        Start-Process $launchExe -ArgumentList "-admin"
+    }
 }
