@@ -893,9 +893,10 @@ public class AdminForm : Form
             System.IO.Compression.ZipFile.CreateFromDirectory(staging, zipPath);
             Directory.Delete(staging, true);
 
-            Clipboard.SetText(zipPath);
-            WriteLog($"[Package] Created: {zipPath} (path copied to clipboard)", Color.Green);
-            MessageBox.Show($"EndUser package created:\n{zipPath}\n\nPath copied to clipboard.",
+            var zipDir = Path.GetDirectoryName(zipPath) ?? zipPath;
+            Clipboard.SetText(zipDir);
+            WriteLog($"[Package] Created: {zipPath} (folder path copied to clipboard)", Color.Green);
+            MessageBox.Show($"EndUser package created:\n{zipPath}\n\nFolder path copied to clipboard.",
                 "Create EndUser Package", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         catch (Exception ex)
