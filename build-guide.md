@@ -151,7 +151,7 @@ After building, see the **[README](README.md)** for configuration, usage instruc
 
 ```
 ┌─────────────────────────────────────────────┐
-│              SPOSearchProbe.exe              │
+│              SPOSearchProbe.exe             │
 │  ┌────────────┐  ┌────────────────────────┐ │
 │  │ AdminForm  │  │  MainForm (End-User)   │ │
 │  │ Multi-user │  │  Single-user, config   │ │
