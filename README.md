@@ -132,6 +132,15 @@ The `Build.ps1` script checks prerequisites (offers to install .NET 10 SDK via w
 .\Build.ps1 -Launch          # Build and launch the app in admin mode
 ```
 
+> **Execution Policy:** If you get an "UnauthorizedAccess" error, run one of these first:
+> ```powershell
+> # Option A: Allow for current session only (no permanent change)
+> powershell -ExecutionPolicy Bypass -File .\Build.ps1
+>
+> # Option B: Allow unsigned scripts for your user account (permanent)
+> Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+> ```
+
 | Requirement | Version |
 |---|---|
 | **Windows** | 10 (1809+) or 11 |

@@ -32,6 +32,16 @@ script), and then builds self-contained single-file EXEs for both win-x64 and wi
 .\Build.ps1 -Launch
 ```
 
+> **Execution Policy:** If PowerShell blocks the script with an "UnauthorizedAccess" error,
+> the execution policy prevents unsigned scripts from running. Use one of these workarounds:
+> ```powershell
+> # Option A: Run with bypass (no permanent change, single invocation)
+> powershell -ExecutionPolicy Bypass -File .\Build.ps1
+>
+> # Option B: Allow unsigned local scripts for your user account (permanent)
+> Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+> ```
+
 Output:
 
 ```
