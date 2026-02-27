@@ -172,3 +172,11 @@ After building, see the **[README](README.md)** for configuration, usage instruc
 │  search-config.json  (companion file)       │
 └─────────────────────────────────────────────┘
 ```
+
+---
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
+**Disclaimer:** This tool stores OAuth tokens encrypted with Windows DPAPI. Token security is tied to the Windows user account. The authors are not liable for any data loss, security incidents, or service disruptions. Use at your own risk.
