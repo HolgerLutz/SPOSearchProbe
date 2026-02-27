@@ -141,65 +141,9 @@ Repeat with `-r win-arm64` for ARM64 builds.
 
 ---
 
-## Configure Before Distribution
+## Next Steps
 
-> **Tip:** You don't need to edit `search-config.json` manually. Launch the tool in **Admin mode**
-> (`.\SPOSearchProbe.exe -admin`), configure all settings in the GUI, and the config file is saved
-> automatically. You can then use **📦 Create EndUser Package** to generate a ready-to-distribute ZIP.
-
-If you prefer to edit the config file manually:
-
-```json
-{
-    "siteUrl": "https://contoso.sharepoint.com/sites/MySite",
-    "tenantId": "contoso.onmicrosoft.com",
-    "queryText": "contentclass:STS_ListItem",
-    "selectProperties": ["Title", "Path", "LastModifiedTime", "WorkId"],
-    "rowLimit": 10,
-    "sortList": "",
-    "pageUrl": "",
-    "intervalValue": 10,
-    "intervalUnit": "seconds",
-    "clientId": "9bc3ab49-b65d-410a-85ad-de819febfddc",
-    "workspaceUrl": ""
-}
-```
-
-| Field | Description |
-|---|---|
-| `siteUrl` | SharePoint site collection URL to search against |
-| `tenantId` | Entra ID tenant (e.g. `contoso.onmicrosoft.com` or a GUID) |
-| `queryText` | KQL search query |
-| `selectProperties` | Managed properties to return |
-| `rowLimit` | Max results per query (1–500) |
-| `sortList` | Sort order (e.g. `Created:descending`) |
-| `pageUrl` | Optional page URL for validation monitoring |
-| `intervalValue` / `intervalUnit` | Scheduling interval |
-| `clientId` | Azure AD app registration (default: PnP Management Shell) |
-| `workspaceUrl` | Optional URL for log upload workspace |
-
----
-
-## Run the Application
-
-1. Extract `SPOSearchProbe-win-x64.zip` to a folder
-2. Edit `search-config.json` with your tenant and search parameters
-3. Double-click `SPOSearchProbe.exe` → launches **End-User mode** (simple GUI)
-
-### Launch Modes
-
-| Mode | How to launch | Description |
-|---|---|---|
-| **End-User** (default) | `SPOSearchProbe.exe` | Simple GUI: login, run search, view results |
-| **Admin** | `SPOSearchProbe.exe -admin` | Full GUI: multi-user management, page validation, config editor, package creation |
-
-To launch Admin mode, either:
-- Open a terminal and run: `.\SPOSearchProbe.exe -admin`
-- Create a shortcut and add `-admin` to the Target field
-- Accepts `-admin`, `--admin`, or `/admin`
-
-> **Tip:** In Admin mode, the config file is auto-created if missing. In End-User mode,
-> a pre-configured `search-config.json` must exist next to the `.exe`.
+After building, see the **[README](README.md)** for configuration, usage instructions, and Admin mode workflow.
 
 ---
 
